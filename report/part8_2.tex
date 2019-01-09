@@ -1,0 +1,17 @@
+\section{Инструкция системного администратора}
+\begin{enumerate}
+	\item Скачать и распаковать сервер Apache Tomcat 7.
+	\item Установить СУБД MySQL.
+	\item Настроить СУБД:
+	\begin{itemize}
+		\item создать новую базу данных;
+		\item создать нового пользователя;
+		\item дать полный доступ к созданной базе данных.
+	\end{itemize}
+	\item Скачать проект из репозитория\\ \url{https://github.com/AbdullinAM/distributed_systems}
+	\item Прописать параметры подключения к БД~(название БД, имя пользователя и пароль) в файле \texttt{distributed\_systems/src/main/resources/application.properties}
+	\item Перейти в корневую папку проекта. Собрать war файл при помощи команды \texttt{mvn compilewar:war}.
+	\item Удалить предыдущие версии версии проекта из папки веб приложений сервера Tomcat с помощью команды \texttt{rm -rf \$TOMCAT\_WEBAPPS/pms-1.0-SNAPSHOT}.
+	\item Скопировать новый war файл в папку веб-приложений сервера: \texttt{cp pms-1.0-SNAPSHOT \$TOMCAT\_WEBAPPS}.
+	\item Перезапустить сервер Tomcat.
+\end{enumerate}

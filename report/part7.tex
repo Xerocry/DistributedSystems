@@ -1,0 +1,147 @@
+\section{Слой хранения данных}
+	В качестве СУБД была выбрана система MySQL. Для работы с базой данных был использован Java Persistance API, в частности его реализация в библиотеке Hibernate. В базе данных хранятся все сущности, описанные в пакете \texttt{entity}. Описание сущностей производится с помощью специальных аннотаций JPA. Пример сущностного класса \texttt{User} приведен в листинге~\ref{lst:userORM}.
+	\begin{lstlisting}[style=crs_java, label={lst:userORM}, caption={Описание сущности}]
+	@Entity
+	@Table(name = "USERS")
+	public class User {
+	
+	@Id
+	@Column(name = "ID")
+	@GeneratedValue
+	private Long id;
+	
+	@Column(name = "LOGIN", unique = true, nullable = false)
+	private String login;
+	
+	@Column(name = "NAME")
+	private String name;
+	
+	@Column(name = "PASSWORD")
+	private String password;
+	
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "owner")
+	private List<Message> messages = new ArrayList<>();
+	}
+	\end{lstlisting}
+	
+	Также, для того чтобы Hibernate нашел все сущности, необходимо описать все сущностные классы в файле persistance.xml(листинг~\ref{lst:persistance}).
+	\begin{lstlisting}[style=crs_xml, label={lst:persistance}, caption={Файл persistance.xml}]
+	<?xml version="1.0" encoding="UTF-8" ?>
+	<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+	http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
+	
+	<persistence-unit name="my-pms">
+	<class>com.kspt.pms.entity.BugReport</class>
+	<class>com.kspt.pms.entity.Comment</class>
+	<class>com.kspt.pms.entity.Message</class>
+	<class>com.kspt.pms.entity.Milestone</class>
+	<class>com.kspt.pms.entity.Project</class>
+	<class>com.kspt.pms.entity.Ticket</class>
+	<class>com.kspt.pms.entity.User</class>
+	</persistence-unit>
+	
+	</persistence>
+	\end{lstlisting}
+	
+	Для каждой сущности был реализован свой репозиторий, в котором определены методы для поиска и сохранения сущностей. Репозитории были реализованы с помощью библиотеки Spring Data. Данная библиотека позволяет описывать только интерфейс, и по названиям методов этого интерфейса умеет автоматически генерировать его реализацию. Это очень сильно упрощает работу с базой данных. Рассмотрим данные репозитории более подробно.
+	\begin{itemize}
+		\item \texttt{BugReportRepository}
+		\begin{itemize}
+			\item \texttt{Optional<BugReport> findById(Long id)} --- поиск по идентификатору.
+			\item \texttt{Collection<BugReport> findByProjectName(String name)} --- поиск всех отчетов, принадлежащих проекту с заданным именем.
+			\item \texttt{Collection<BugReport> findByCreatorLogin(String login)} --- поиск всех отчетов, созданных пользователем с заданным логином.
+			\item \texttt{Collection<BugReport> findByDeveloperLogin(String login)} --- поиск всех отчетов, исправляемых пользователем с заданным логином.	
+		\end{itemize}
+		
+		\item \texttt{CommentRepository}
+		\begin{itemize}
+			\item \texttt{Optional<Comment> findById(Long id)} --- поиск по идентификатору.
+			\item \texttt{Collection<Comment> findByUserLogin(String login)} --- поиск всех комментариев, оставленных пользователем с заданным логином.
+		\end{itemize}
+		
+		\item \texttt{MessageRepository}
+		\begin{itemize}
+			\item \texttt{Collection<Message> findByOwnerLogin(String login)} --- поиск всех уведомлений, принадлежащих пользователю с заданным логином.
+		\end{itemize}
+		
+		\item \texttt{MilestoneRepository}
+		\begin{itemize}
+			\item \texttt{Optional<Milestone> findById(Long id)} --- поиск по идентификатору.
+			\item \texttt{Collection<Milestone> findByProjectName(String name)} --- поиск всех майлстоуну, принадлежащих проекту с заданным именем.
+		\end{itemize}
+		
+		\item \texttt{ProjectRepository}
+		\begin{itemize}
+			\item \texttt{Optional<Project> findByName(String name)} --- поиск по имени.
+			\item \texttt{Collection<Project> findByManagerLogin(String login)} --- поиск по менеджеру.
+			\item \texttt{Collection<Project> findByTeamLeaderLogin(String login)} --- поиск по тимлидеру.
+			\item \texttt{Collection<Project> findByDevelopersContaining(User user)} --- поиск по разработчику.
+			\item \texttt{Collection<Project> findByTestersContaining(User user)} --- поиск по тестировщику.
+		\end{itemize}
+		
+		\item \texttt{TicketRepository}
+		\begin{itemize}
+			\item \texttt{Optional<Ticket> findById(Long id)} --- поиск по идентификатору.
+			\item \texttt{Collection<Ticket> findByMilestoneId(Long id)} --- поиск майлстоуну.
+			\item \texttt{Collection<Ticket> findByAssigneesContaining(User user)} --- поиск по исполнителю.
+			\item \texttt{Collection<Ticket> findByCreatorLogin(String login)} --- поиск по создателю.
+		\end{itemize}
+		
+		\item \texttt{UserRepository}
+		\begin{itemize}
+			\item \texttt{Optional<User> findByLogin(String login)} --- поиск по логину.
+		\end{itemize}
+	\end{itemize}
+	
+	Для того, чтобы все эти библиотеки правильно проинициализировались, необходимо в классе конфигурации определить источник данных~(листинг~\ref{lst:config}).
+	\begin{lstlisting}[style=crs_java, label={lst:config}, caption={Конфигурация источника данных}]
+	@Bean
+	public DataSource dataSource() {
+	DriverManagerDataSource dataSource = new DriverManagerDataSource();
+	dataSource.setDriverClassName(env.getRequiredProperty("jdbc.driverClassName"));
+	dataSource.setUrl(env.getRequiredProperty("jdbc.url"));
+	dataSource.setUsername(env.getRequiredProperty("jdbc.username"));
+	dataSource.setPassword(env.getRequiredProperty("jdbc.password"));
+	return dataSource;
+	}
+	
+	@Bean
+	public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+	JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+	jdbcTemplate.setResultsMapCaseInsensitive(true);
+	return jdbcTemplate;
+	}
+	
+	public Properties additionalProreties() {
+	Properties properties = new Properties();
+	//        properties.setProperty("hibernate.show_sql", "true");
+	return properties;
+	}
+	
+	@Bean
+	public EntityManagerFactory entityManagerFactory() {
+	HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+	vendorAdapter.setGenerateDdl(true);
+	
+	LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+	factory.setJpaVendorAdapter(vendorAdapter);
+	factory.setPackagesToScan("com.kspt.pms");
+	factory.setDataSource(dataSource());
+	factory.setPersistenceUnitName("my-pms");
+	factory.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+	factory.setJpaProperties(additionalProreties());
+	factory.afterPropertiesSet();
+	return factory.getObject();
+	}
+	
+	@Bean
+	public PlatformTransactionManager transactionManager() {
+	JpaTransactionManager txManager = new JpaTransactionManager();
+	txManager.setEntityManagerFactory(entityManagerFactory());
+	return txManager;
+	}
+	\end{lstlisting}
+	
