@@ -1,0 +1,59 @@
+<div>
+
+    <ul class="breadcrumb">
+        <li><a ng-href="#/user/{{ticket.user.login}}">Home</a></li>
+        <li><a ng-href="#/login">Log out</a></li>
+    </ul>
+    <div class="row">
+        <div class="col-md-offset-1 col-md-10">
+
+            <h3>Ticket {{ticket.instance.id}}</h3>
+            <h3>Milestone: <a ng-href="#/milestone/{{ticket.milestone.id}}">{{ticket.milestone.id}}</a></h3>
+            <h3>Creation time: {{ticket.instance.creationTime| date: 'dd-MM-yyyy'}}</h3>
+            <h3>Creator: <a ng-href="#/user/{{ticket.instance.creator.login}}">{{ticket.instance.creator.login}}</a></h3>
+            <h3>Status: {{ticket.instance.status}}</h3>
+            <h3>Task: {{ticket.instance.task}}</h3>
+
+            <div ng-show="ticket.permissions.ticketManager">
+                <button class="btn btn-primary" ng-click="ticket.changeStatus('OPENED')">Set opened</button>
+            </div>
+            <div ng-show="ticket.permissions.ticketDeveloper">
+                <button class="btn btn-primary" ng-click="ticket.changeStatus('ACCEPTED')">Set accepted</button>
+                <button class="btn btn-primary" ng-click="ticket.changeStatus('IN_PROGRESS')">Set in progress</button>
+                <button class="btn btn-primary" ng-click="ticket.changeStatus('FINISHED')">Set finished</button>
+            </div>
+            <div ng-show="ticket.permissions.ticketManager">
+                <button class="btn btn-primary" ng-click="ticket.changeStatus('CLOSED')">Set closed</button>
+            </div>
+
+            <div class="row">
+                <div class="col-md-offset-0 col-md-6">
+                    <h3>Assignees:</h3>
+                    <div ng-repeat="it in ticket.assignees">
+                        <div class="alert alert-info" role="alert">
+                            <h4 class="alert-heading"><a ng-href="#/user/{{it.user.login}}">{{it.name}}</a></h4>
+                        </div>
+                    </div>
+                    <div ng-show="ticket.permissions.ticketManager">
+                        <input ng-model="assigneeLogin">
+                        <button class="btn btn-secondary" ng-click="ticket.addAssignee()">Add assignee</button>
+                    </div>
+                </div>
+
+                <div class="col-md-offset-0 col-md-6">
+                    <h3>Comments:</h3>
+                    <div ng-repeat="it in (ticket.comments | orderBy: 'date': true)">
+                        <div class="alert alert-danger" role="alert">
+                            <h4 class="alert-heading"><a ng-href="#/user/{{it.user.login}}">{{it.date| date: 'dd-MM-yyyy hh:mm:ss'}} : {{it.user.name}}</a></h4>
+                            <p>{{it.description}}</p>
+                        </div>
+                    </div>
+                    <div ng-show="ticket.permissions.ticketCommenter">
+                        <textarea class="form-control" rows="5" cols="50" ng-model="ticketComment"></textarea>
+                        <button class="btn btn-secondary" ng-click="ticket.commentTicket()">comment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

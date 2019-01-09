@@ -1,0 +1,42 @@
+<div>
+
+    <ul class="breadcrumb">
+        <li><a ng-href="#/user/{{report.user.login}}">Home</a></li>
+        <li><a ng-href="#/login">Log out</a></li>
+    </ul>
+    <div class="row">
+        <div class="col-md-offset-1 col-md-10">
+            <h3>Report: {{report.instance.id}}</h3>
+            <h3>Project: <a ng-href="#/project/{{report.project.name}}">{{report.project.name}}</a></h3>
+            <h3>Creator: <a ng-href="#/user/{{report.instance.creator.login}}">{{report.instance.creator.login}}</a></h3>
+            <h3>Status: {{report.instance.status}}</h3>
+            <h3>Creation date: {{report.instance.creationTime| date: 'dd-MM-yyyy'}}</h3>
+            <h3>Developer: <a ng-href="#/user/{{report.instance.developer.login}}">{{report.instance.developer.name}}</a></h3>
+            <h3>Description: {{report.instance.description}}</h3>
+
+            <div ng-show="report.permissions.reportCreator">
+                <button class="btn btn-primary" ng-click="report.changeStatus('OPENED')">Set opened</button>
+            </div>
+            <div ng-show="report.permissions.reportDeveloper">
+                <button class="btn btn-primary" ng-click="report.changeStatus('ACCEPTED')">Set accepted</button>
+                <button class="btn btn-primary" ng-click="report.changeStatus('FIXED')">Set fixed</button>
+            </div>
+            <div ng-show="report.permissions.reportManager">
+                <button class="btn btn-primary" ng-click="report.changeStatus('CLOSED')">Set closed</button>
+            </div>
+
+            <h2>Comments:</h2>
+            <div ng-repeat="it in (report.comments | orderBy: 'date': true)">
+                <div class="alert alert-danger" role="alert">
+                    <h4 class="alert-heading"><a ng-href="#/user/{{it.user.login}}">{{it.date| date: 'dd-MM-yyyy hh:mm:ss'}} : {{it.user.name}}</a></h4>
+                    <p>{{it.description}}</p>
+                </div>
+            </div>
+
+            <div ng-show="report.permissions.reportCommenter">
+                <textarea class="form-control" rows="5" cols="50" ng-model="reportComment"></textarea>
+                <button class="btn btn-primary" ng-click="report.commentReport()">comment</button>
+            </div>
+        </div>
+    </div>
+</div>

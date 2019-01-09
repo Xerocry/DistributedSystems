@@ -1,0 +1,112 @@
+<div>
+
+    <ul class="breadcrumb">
+        <li><a ng-href="#/user/{{user.authlogin}}">Home</a></li>
+        <li><a ng-href="#/login">Log out</a></li>
+    </ul>
+    <div class="row">
+        <div class="col-md-offset-1 col-md-10">
+
+            <h3>Id: {{user.instance.id}}</h3>
+            <h3>Login: {{user.instance.login}}</h3>
+            <h3>Name: {{user.instance.name}}</h3>
+
+            <div class="row">
+                <div class="col-md-offset-0 col-md-8">
+                    <div ng-show="user.isMe">
+                        <input class="form-control" type="text" ng-model="projectName" placeholder="Project name">
+                        <button class="btn btn-primary" ng-click="user.createProject()">Create project</button>
+                    </div>
+                    <div ng-if="user.managedProjects.length != 0">
+                        <h3>Managed Projects:</h3>
+                        <div ng-repeat="it in user.managedProjects">
+                            <div class="alert alert-info" role="alert">
+                                <h4 class="alert-heading"><a ng-href="#/project/{{it.name}}">{{it.name}}</a></h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div ng-if="user.leadedProjects.length != 0">
+                        <h3>Leaded Projects:</h3>
+                        <div ng-repeat="it in user.leadedProjects">
+                            <div class="alert alert-info" role="alert">
+                                <h4 class="alert-heading"><a ng-href="#/project/{{it.name}}">{{it.name}}</a></h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div ng-if="user.developedProjects.length != 0">
+                        <h3>Developed Projects:</h3>
+                        <div ng-repeat="it in user.developedProjects">
+                            <div class="alert alert-info" role="alert">
+                                <h4 class="alert-heading"><a ng-href="#/project/{{it.name}}">{{it.name}}</a></h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div ng-if="user.testedProjects.length != 0">
+                        <h3>Tested Projects:</h3>
+                        <div ng-repeat="it in user.testedProjects">
+                            <div class="alert alert-info" role="alert">
+                                <h4 class="alert-heading"><a ng-href="#/project/{{it.name}}">{{it.name}}</a></h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-offset-0 col-md-4">
+                            <h3>Managed reports</h3>
+                            <div ng-repeat="it in (user.managedReports | orderBy: 'creationTime': true)">
+                                <div class="alert alert-info" role="alert">
+                                    <h4 class="alert-heading"><a ng-href="#/report/{{it.id}}">{{it.id}} : {{it.status}}</a></h4>
+                                    <p>{{it.description}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-offset-0 col-md-4">
+                            <h3>Assigned reports</h3>
+                            <div ng-repeat="it in (user.assignedReports | orderBy: 'creationTime': true)">
+                                <div class="alert alert-info" role="alert">
+                                    <h4 class="alert-heading"><a ng-href="#/report/{{it.id}}">{{it.id}} : {{it.status}}</a></h4>
+                                    <p>{{it.description}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-offset-0 col-md-4">
+                            <h3>Managed tickets</h3>
+                            <div ng-repeat="it in (user.managedTickets | orderBy: 'creationTime': true)">
+                                <div class="alert alert-info" role="alert">
+                                    <h4 class="alert-heading"><a ng-href="#/ticket/{{it.id}}">{{it.id}} : {{it.status}}</a></h4>
+                                    <p>{{it.task}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-offset-0 col-md-4">
+                            <h3>Assigned tickets</h3>
+                            <div ng-repeat="it in (user.assignedTickets | orderBy: 'creationTime': true)">
+                                <div class="alert alert-info" role="alert">
+                                    <h4 class="alert-heading"><a ng-href="#/ticket/{{it.id}}">{{it.id}} : {{it.status}}</a></h4>
+                                    <p>{{it.task}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-offset-0 col-md-4">
+                    <h3>Messages:</h3>
+
+                    <div ng-repeat="message in (user.messages | orderBy: 'date': true)">
+                        <div class="alert alert-danger" role="alert">
+                            <h4 class="alert-heading">{{message.date| date: 'dd-MM-yyyy hh:mm:ss'}}</h4>
+                            <p>{{message.id}} : {{message.content}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

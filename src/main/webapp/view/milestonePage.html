@@ -1,0 +1,38 @@
+<div>
+
+    <ul class="breadcrumb">
+        <li><a ng-href="#/user/{{milestone.user.login}}">Home</a></li>
+        <li><a ng-href="#/login">Log out</a></li>
+    </ul>
+
+    <div class="row">
+        <div class="col-md-offset-1 col-md-10">
+            <h3>Milestone {{milestone.instance.id}}</h3>
+            <h3>Project <a ng-href="#/project/{{milestone.project.name}}">{{milestone.project.name}}</a></h3>
+            <h3>Status: {{milestone.instance.status}}</h3>
+            <h3>Starting date: {{milestone.instance.startingDate | date: 'dd-MM-yyyy'}}</h3>
+            <h3>Ending date: {{milestone.instance.endingDate | date: 'dd-MM-yyyy'}}</h3>
+            <h3>Activated date: {{milestone.instance.activatedDate | date: 'dd-MM-yyyy'}}</h3>
+            <h3>Closing date: {{milestone.instance.closedDate | date: 'dd-MM-yyyy'}}</h3>
+
+            <div ng-show="milestone.permissions.milestoneManager">
+                <button class="btn btn-primary" ng-click="milestone.changeStatus('ACTIVE')">Activate</button>
+                <button class="btn btn-primary" ng-click="milestone.changeStatus('CLOSED')">Close</button>
+            </div>
+
+            <h2>Tickets:</h2>
+            <div ng-if="project.milestones.length != 0">
+                <div ng-repeat="it in (milestone.tickets | orderBy: 'creationTime': true)">
+                    <div class="alert alert-info" role="alert">
+                        <h4 class="alert-heading"><a ng-href="#/ticket/{{it.id}}">{{it.id}} : {{it.status}}</a></h4>
+                        <p>{{it.task}}</p>
+                    </div>
+                </div>
+            </div>
+            <div ng-show="milestone.permissions.ticketManager">
+                <textarea class="form-control" rows="10" cols="50" ng-model="ticketTask"></textarea>
+                <button class="btn btn-primary" ng-click="milestone.addTicket()">Add ticket</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,76 @@
+<div>
+
+    <ul class="breadcrumb">
+        <li><a ng-href="#/user/{{project.user.login}}">Home</a></li>
+        <li><a ng-href="#/login">Log out</a></li>
+    </ul>
+    <div class="row">
+        <div class="col-md-offset-1 col-md-10">
+
+            <h3>Id: {{project.instance.id}}</h3>
+            <h3>Project: {{project.instance.name}}</h3>
+            <h3>Manager: <a ng-href="#/user/{{project.instance.manager.login}}">{{project.instance.manager.name}}</a></h3>
+            <h3>Team leader: <a ng-href="#/user/{{project.instance.teamLeader.login}}">{{project.instance.teamLeader.name}}</a></h3>
+            <div ng-show="project.permissions.userManager">
+                <input class="form-control" ng-model="teamLeaderLogin" placeholder="Team leader login">
+                <button class="btn btn-primary" ng-click="project.setTeamLeader()">Set team leader</button>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-offset-0 col-md-6">
+                    <h3>Developers:</h3>
+                    <div ng-repeat="it in project.developers">
+                        <div class="alert alert-danger" role="alert">
+                            <h4 class="alert-heading"><a ng-href="#/user/{{it.login}}">{{it.name}}</a></h4>
+                        </div>
+                    </div>
+                    <div ng-show="project.permissions.userManager">
+                        <input class="form-control" ng-model="developerLogin" placeholder="Developer login">
+                        <button class="btn btn-primary" ng-click="project.addDeveloper()">Add developer</button>
+                    </div>
+                    <h3>Testers:</h3>
+                    <div ng-repeat="it in project.testers">
+                        <div class="alert alert-danger" role="alert">
+                            <h4 class="alert-heading"><a ng-href="#/user/{{it.login}}">{{it.name}}</a></h4>
+                        </div>
+                    </div>
+                    <div ng-show="project.permissions.userManager">
+                        <input class="form-control" ng-model="testerLogin" placeholder="Tester login">
+                        <button class="btn btn-primary" ng-click="project.addTester()">Add tester</button>
+                    </div>
+                </div>
+
+                <div class="col-md-offset-0 col-md-6">
+                    <h2>Milestones:</h2>
+                    <div ng-repeat="it in project.milestones">
+                        <div class="alert alert-info" role="alert">
+                            <h4 class="alert-heading"><a ng-href="#/milestone/{{it.id}}">{{it.startingDate | date: 'dd-MM-yyyy'}} - {{it.endingDate | date: 'dd-MM-yyyy'}} : {{it.status}}</a></h4>
+                            <p>{{it.description}}</p>
+                        </div>
+                    </div>
+                    <div ng-show="project.permissions.milestoneManager">
+                        <h4>Start time</h4>
+                        <input class="form-control" type="date" ng-model="startTime" placeholder="Milestone start">
+                        <h4>End time</h4>
+                        <input class="form-control" type="date" ng-model="endTime" placeholder="Milestone end">
+                        <button class="btn btn-primary" ng-click="project.addMilestone()">Add milestone</button>
+                    </div>
+
+                    <h2>Bug reports:</h2>
+                    <div ng-repeat="it in (project.reports | orderBy: 'creationTime': true)">
+                        <div class="alert alert-info" role="alert">
+                            <h4 class="alert-heading"><a ng-href="#/report/{{it.id}}">{{it.id}} : {{it.status}}</a></h4>
+                            <p>{{it.description}}</p>
+                        </div>
+                    </div>
+                    <div ng-show="project.permissions.reportCreator">
+                        <textarea class="form-control" rows="5" cols="40" ng-model="reportDesc"></textarea>
+                        <button class="btn btn-primary" ng-click="project.addReport()">Add report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

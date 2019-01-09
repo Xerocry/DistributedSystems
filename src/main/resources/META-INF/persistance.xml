@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+ http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
+
+    <persistence-unit name="my-pms">
+        <class>com.kspt.pms.entity.BugReport</class>
+        <class>com.kspt.pms.entity.Comment</class>
+        <class>com.kspt.pms.entity.Message</class>
+        <class>com.kspt.pms.entity.Milestone</class>
+        <class>com.kspt.pms.entity.Project</class>
+        <class>com.kspt.pms.entity.Ticket</class>
+        <class>com.kspt.pms.entity.User</class>
+    </persistence-unit>
+
+</persistence>
